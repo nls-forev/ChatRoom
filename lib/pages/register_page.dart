@@ -7,8 +7,10 @@ class RegisterPage extends StatelessWidget {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _cfpasswordController = TextEditingController();
 
+  final void Function()? onTap;
+
   void register() {}
-  RegisterPage({super.key});
+  RegisterPage({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -69,11 +71,14 @@ class RegisterPage extends StatelessWidget {
                 "Already have an account? ",
                 style: TextStyle(color: Theme.of(context).colorScheme.primary),
               ),
-              Text(
-                "Login now",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary),
+              GestureDetector(
+                onTap: onTap,
+                child: Text(
+                  "Login now",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary),
+                ),
               ),
             ],
           )
