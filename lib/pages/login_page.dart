@@ -1,4 +1,4 @@
-import 'package:demodb/auth/auth_service.dart';
+import 'package:demodb/services/auth/auth_service.dart';
 import 'package:demodb/components/my_button.dart';
 import 'package:demodb/components/my_textfield.dart';
 import 'package:flutter/material.dart';

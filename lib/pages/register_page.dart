@@ -1,3 +1,4 @@
+import 'package:demodb/services/auth/auth_service.dart';
 import 'package:demodb/components/my_button.dart';
 import 'package:demodb/components/my_textfield.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,29 @@ class RegisterPage extends StatelessWidget {
 
   final void Function()? onTap;
 
-  void register() {}
+  void register(BuildContext context) {
+    if (_passwordController.text == _cfpasswordController.text) {
+      try {
+        AuthService().signUp(_emailController.text, _emailController.text);
+      } catch (e) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(e.toString()),
+          ),
+        );
+      }
+    }
+    else {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text("Passwords don't match!"),
+          ),
+        );
+    }
+  }
+
   RegisterPage({super.key, required this.onTap});
 
   @override
@@ -59,7 +82,7 @@ class RegisterPage extends StatelessWidget {
           ),
           MyButton(
             text: "Register",
-            onTap: register,
+            onTap: () => register(context),
           ),
           const SizedBox(
             height: 25,
