@@ -1,3 +1,4 @@
+import 'package:demodb/auth/auth_service.dart';
 import 'package:demodb/components/my_button.dart';
 import 'package:demodb/components/my_textfield.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,18 @@ class LoginPage extends StatelessWidget {
 
   final void Function()? onTap;
 
-  void login() {}
+  void login(BuildContext context) async {
+    try {
+      AuthService().signIn(_emailController.text, _passwordController.text);
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(e.toString()),
+        ),
+      );
+    }
+  }
 
   LoginPage({super.key, required this.onTap});
 
@@ -51,7 +63,7 @@ class LoginPage extends StatelessWidget {
           ),
           MyButton(
             text: "Login",
-            onTap: login,
+            onTap: () => login(context),
           ),
           const SizedBox(
             height: 25,
