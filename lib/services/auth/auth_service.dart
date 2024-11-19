@@ -10,13 +10,28 @@ class AuthService {
   }
 
   // Log in
-  Future<UserCredential> signIn(String email, password) async {
+  Future<UserCredential> signIn(String email, String password) async {
     try {
+      // Trim whitespaces and validate input
+      if (email.isEmpty || password.isEmpty) {
+        throw Exception('Email and password cannot be empty');
+      }
+
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
+          email: email.trim(), password: password.trim());
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      throw Exception(e.code);
+      // More detailed error handling
+      switch (e.code) {
+        case 'invalid-credential':
+          throw Exception('Invalid email or password');
+        case 'user-not-found':
+          throw Exception('No user found with this email');
+        case 'wrong-password':
+          throw Exception('Incorrect password');
+        default:
+          throw Exception(e.message ?? 'Login failed');
+      }
     }
   }
 
