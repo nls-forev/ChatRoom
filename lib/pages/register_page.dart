@@ -2,13 +2,13 @@ import 'package:demodb/components/my_button.dart';
 import 'package:demodb/components/my_textfield.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
+class RegisterPage extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _cfpasswordController = TextEditingController();
 
-  void login() {}
-
-  LoginPage({super.key});
+  void register() {}
+  RegisterPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class LoginPage extends StatelessWidget {
             height: 50,
           ),
           Text(
-            "Welcome back, you've been missed!",
+            "Lets create an account for you",
             style: TextStyle(
                 fontSize: 16, color: Theme.of(context).colorScheme.primary),
           ),
@@ -47,9 +47,17 @@ class LoginPage extends StatelessWidget {
           const SizedBox(
             height: 10,
           ),
+          MyTextField(
+            hintText: "Confirm password",
+            isPass: true,
+            controller: _cfpasswordController,
+          ),
+          const SizedBox(
+            height: 10,
+          ),
           MyButton(
-            text: "Login",
-            onTap: login,
+            text: "Register",
+            onTap: register,
           ),
           const SizedBox(
             height: 25,
@@ -58,11 +66,11 @@ class LoginPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Not a member? ",
+                "Already have an account? ",
                 style: TextStyle(color: Theme.of(context).colorScheme.primary),
               ),
               Text(
-                "Register now",
+                "Login now",
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary),
