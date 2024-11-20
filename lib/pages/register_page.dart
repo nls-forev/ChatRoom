@@ -13,7 +13,7 @@ class RegisterPage extends StatelessWidget {
   void register(BuildContext context) {
     if (_passwordController.text == _cfpasswordController.text) {
       try {
-        AuthService().signUp(_emailController.text, _emailController.text);
+        AuthService().signUp(_emailController.text.trim(), _passwordController.text.trim());
       } catch (e) {
         showDialog(
           context: context,

@@ -57,19 +57,33 @@ class MyDrawer extends StatelessWidget {
               ),
             ],
           ),
-
-          // Logout tile
-          Padding(
-            padding: const EdgeInsets.only(left: 25.0),
-            child: ListTile(
-              title: Text("L O G O U T"),
-              leading: Icon(Icons.logout),
-              onTap: () {
-                Navigator.pop(context);
-                logout();
-              },
-            ),
-          ),
+          Column(
+            children: [
+              // Logout tile
+              Padding(
+                padding: const EdgeInsets.only(left: 25.0),
+                child: ListTile(
+                  title: Text("L O G O U T"),
+                  leading: Icon(Icons.logout),
+                  onTap: () {
+                    Navigator.pop(context);
+                    logout();
+                  },
+                ),
+              ),
+              // Delete account tile
+              Padding(
+                padding: const EdgeInsets.only(left: 25.0),
+                child: ListTile(
+                  title: Text("D E L E T E  A C C O U N T"),
+                  leading: Icon(Icons.delete_outline),
+                  onTap: () {
+                    AuthService().deleteUser(context);
+                  },
+                ),
+              ),
+            ],
+          )
         ],
       ),
     );

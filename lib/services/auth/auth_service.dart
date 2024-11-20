@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart'; // for Firebase Authentication
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -35,7 +36,7 @@ class AuthService {
     }
   }
 
-  // Sign in
+  // Sign up
   Future<UserCredential> signUp(String email, password) async {
     try {
       UserCredential userCredential =
@@ -58,5 +59,74 @@ class AuthService {
   // Sign out
   Future<void> signOut() async {
     return await _auth.signOut();
+  }
+
+  Future<void> deleteUser(BuildContext context) async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+
+    // Show a dialog to ask for the password
+    String password = await _showPasswordDialog(context);
+
+    if (password.isEmpty) {
+      // If the password is empty, exit
+      return;
+    }
+
+    // Reauthenticate the user with the entered password
+    AuthCredential credential = EmailAuthProvider.credential(
+      email: currentUser!.email!,
+      password: password,
+    );
+
+    // Reauthenticate with the credentials
+    await currentUser.reauthenticateWithCredential(credential);
+
+    String uid = currentUser.uid;
+
+    // Delete the user and their data
+    await _auth.currentUser!.delete().then((v) async {
+      // Also delete the user's data from Firestore
+      await FirebaseFirestore.instance.collection('Users').doc(uid).delete();
+    });
+  }
+
+  // Show a dialog to ask for the password
+  Future<String> _showPasswordDialog(BuildContext context) async {
+    TextEditingController passwordController = TextEditingController();
+
+    // Show the dialog and wait for the result
+    String? password = await showDialog<String>(
+      context: context,
+      barrierDismissible: false, // Make it non-dismissible by tapping outside
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Enter Password"),
+          content: TextField(
+            controller: passwordController,
+            obscureText: true,
+            decoration: InputDecoration(hintText: "Password"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                // Dismiss the dialog and return the password
+                Navigator.of(context).pop(passwordController.text.trim());
+              },
+              child: Text("OK"),
+            ),
+            TextButton(
+              onPressed: () {
+                // Dismiss the dialog without returning anything
+                Navigator.of(context).pop('');
+              },
+              child: Text("Cancel"),
+            ),
+          ],
+        );
+      },
+    );
+
+    // If the password is null, return an empty string
+    return password ?? '';
   }
 }

@@ -55,31 +55,37 @@ class ChatPage extends StatelessWidget {
             return const Text("Loading!");
           }
           return ListView(
-            children:
-                snapshot.data!.docs.map((doc) => _buildMsgItem(doc)).toList(),
+            children: snapshot.data!.docs
+                .map((doc) => _buildMsgItem(doc, context))
+                .toList(),
           );
         });
   }
 
-  Widget _buildMsgItem(DocumentSnapshot doc) {
+  Widget _buildMsgItem(DocumentSnapshot doc, BuildContext context) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    String messageID = doc.id;
 
     bool isCurrentUser = data['sendID'] == _authService.getCurrentUser()!.uid;
-
     var alignment =
         isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
 
-    return Container(
-      alignment: alignment,
-      child: Column(
-        crossAxisAlignment:
-            isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: [
-          ChatBubble(
-            message: data['message'],
-            isCurrentUser: isCurrentUser,
-          )
-        ],
+    return GestureDetector(
+      onLongPress: () {
+        _showEditDialog(context, messageID, data['message']);
+      },
+      child: Container(
+        alignment: alignment,
+        child: Column(
+          crossAxisAlignment:
+              isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
+            ChatBubble(
+              message: data['message'],
+              isCurrentUser: isCurrentUser,
+            )
+          ],
+        ),
       ),
     );
   }
@@ -112,6 +118,65 @@ class ChatPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showEditDialog(
+      BuildContext context, String messageID, String currentMessage) {
+    TextEditingController editController =
+        TextEditingController(text: currentMessage);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Edit Message"),
+          content: TextField(
+            controller: editController,
+            decoration: InputDecoration(hintText: "Edit your message"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                String updatedMessage = editController.text.trim();
+                if (updatedMessage.isNotEmpty) {
+                  try {
+                    // Get the current user and receiver IDs
+                    String sendID = _authService.getCurrentUser()!.uid;
+                    String recID = recieverID;
+
+                    // Sort IDs to create the chat room ID
+                    List<String> ids = [sendID, recID];
+                    ids.sort();
+                    String cID = ids.join('_');
+
+                    // Update the specific message in the nested messages collection
+                    await FirebaseFirestore.instance
+                        .collection('chat_rooms')
+                        .doc(cID)
+                        .collection('messages')
+                        .doc(messageID)
+                        .update({
+                      'message': updatedMessage,
+                      'timestamp': Timestamp.now(),
+                    });
+                  } catch (e) {
+                    print("Error updating message: $e");
+                  }
+                }
+                Navigator.pop(context);
+              },
+              child: Text("Save"),
+            ),
+          ],
+        );
+      },
     );
   }
 }
