@@ -25,6 +25,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: AuthGate(),
       theme: Provider.of<ThemeProvider>(context).themeData,
-    );
+      );
   }
 }
