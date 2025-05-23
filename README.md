@@ -1,16 +1,31 @@
-# demodb
+graph TD
+    A[Video Input] --> B(Frame Preprocessing <br/> Resize, Normalize)
+    B --> C(Vehicle Detection <br/> YOLOv8 - yolov8s.pt)
+    B --> D_BranchPoint(Slot Processing Input)
 
-A new Flutter project.
+    subgraph Slot_Identification_Strategy["Slot Identification Strategy"]
+        direction LR
+        D_BranchPoint --> D1[Approach A: <br/> Static Slot Definition <br/> Predefined Polygonal ROIs]
+        D_BranchPoint --> D2[Approach B: <br/> Dynamic Slot Detection <br/> Custom YOLOv8 - best.pt]
+        D2 --> D3[Slot Tracking & <br/> Stabilization]
+    end
 
-## Getting Started
+    C --> E{Occupancy Logic <br/> IoU Calculation}
+    D1 --> E
+    D3 --> E
 
-This project is a starting point for a Flutter application.
+    E --> F(Data Logging <br/> Count Summary)
+    E --> G(Output Visualization <br/> On-screen Display)
+    F --> H[CSV File Output]
 
-A few resources to get you started if this is your first Flutter project:
+    classDef inputOutput fill:#f9f,stroke:#333,stroke-width:2px,color:#000
+    classDef processing fill:#ccf,stroke:#333,stroke-width:2px,color:#000
+    classDef model fill:#9f9,stroke:#333,stroke-width:2px,color:#000
+    classDef decision fill:#ff9,stroke:#333,stroke-width:2px,color:#000
+    classDef approachNodes fill:#e6e6fa,stroke:#333,stroke-width:1px,color:#000
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+    class A,H inputOutput
+    class B,F,G,D_BranchPoint processing
+    class C,D2 model
+    class D1,D3 approachNodes
+    class E decision
