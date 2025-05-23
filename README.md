@@ -1,3 +1,4 @@
+```mermaid
 graph TD
     A[Video Input] --> B(Frame Preprocessing <br/> Resize, Normalize)
     B --> C(Vehicle Detection <br/> YOLOv8 - yolov8s.pt)
